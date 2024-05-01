@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tucker's Calorie Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header with Large Title -->
+    <header>
+        <h1>Tucker's Calorie Tracker</h1>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+        <div class="container">
+            <!-- Left Panel for Input and Goal Setting -->
+            <div class="left-panel">
+                <section id="goal-area">
+                    <form id="goal-form">
+                        <input type="number" id="calorie-goal" placeholder="Set your calorie goal">
+                        <button type="submit">Set Goal</button>
+                    </form>
+                </section>
+                <section id="input-area">
+                    <h2>Enter Food:</h2>
+                    <form id="calorie-form">
+                        <input type="text" id="food-item" placeholder="Enter food item" size="20">
+                        <input type="number" id="calories" placeholder="Calories" size="20">
+                        <button type="submit">Add to Tracker</button>
+                    </form>
+                    <h2>Enter Exercise:</h2>
+                        <form id="exercise-form">
+                            <input type="text" id="exercise-item" placeholder="Enter exercise type" size="20">
+                            <input type="number" id="exercise-calories" placeholder="Calories burned" size="20">
+                            <button type="submit">Add Exercise</button>
+                        </form>
+                    <!-- Separate Save and Reset Buttons -->
+                    <!-- Add this near your Save Log button -->
+                    <input type="date" id="log-date" value="">
+                    <button id="save-log-button">Save Log</button>
+
+                    <button id="reset-log-button">Reset Log</button>
+                    <button id="view-log-button">View Log</button>
+                    
+                    <!-- Image Displayed Below the Form -->
+                    <img src="food.png" alt="Food Image" id="food-image">
+                </section>
+                
+            </div>
+
+            <!-- Right Panel for Displaying Calorie Data and Progress -->
+            <div class="right-panel">
+                <div id="calorie-info">
+                    <div id="total-calories" class="calorie-display">Total Calories: 0</div>
+                    <div id="calorie-goal-display" class="calorie-display">Goal: 0</div>
+                    <div id="calories-remaining" class="calorie-display">Remaining: 0</div>
+                </div>
+                <!-- Progress Bar -->
+                <div id="progress-bar-container">
+                    <div id="progress-bar" style="width: 0%;"></div>
+                </div>
+                <!-- Calorie List -->
+                <div id="calorie-list">
+                    <h2>Today's Consumption:</h2>
+                    <!-- List of items will be appended here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 Calorie Tracker. All rights reserved.</p>
+    </footer>
+
+    <!-- Link to JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
+

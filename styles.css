@@ -1,0 +1,185 @@
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 18px; /* Increased base font size */
+}
+
+header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 30px 0; /* Increased padding */
+    font-size: 2.5em; /* Larger title */
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px; /* Increased padding around container */
+    width: 90%; /* Slightly increased width */
+    margin: auto; /* Centering the container */
+}
+
+.left-panel, .right-panel {
+    flex: 1;
+    padding: 30px; /* Increased padding within panels */
+    border: 2px solid #ccc; /* Thicker border for better visibility */
+    margin: 15px; /* Increased margin */
+}
+.exercise {
+    color: blue;  // Different color for exercise entries
+}
+
+.goal-area, #input-area {
+    margin-bottom: 60px; /* Increased spacing between forms */
+}
+
+#goal-form, #calorie-form {
+    margin-bottom: 30px; /* Increased form spacing */
+}
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.log-entry {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.remove-entry {
+    position: absolute;
+    top: -5px;  /* Adjust to better fit within the entry */
+    right: -5px; /* Ensure it does not overlap content */
+    background-color: #ff6347; /* Tomato red for removal */
+    color: white;
+    border: none;
+    padding: 5px 10px;  /* Smaller padding */
+    font-size: 0.8em;  /* Smaller font size */
+    cursor: pointer;
+}
+
+
+
+input[type="text"], input[type="number"], button {
+    padding: 15px 25px; /* Larger input and button for easier interaction */
+    font-size: 1.2em; /* Larger text in inputs and buttons */
+    border: 2px solid #ccc; /* Thicker borders for inputs */
+}
+
+.calorie-display {
+    padding: 15px;
+    margin-bottom: 15px; /* Adding space between each calorie display */
+    background: #f9f9f9;
+    border: 2px solid #ccc;
+    font-size: 1.5em; /* Larger font for visibility */
+    display: block; /* Ensure each element is treated as a block for vertical stacking */
+}
+
+.calorie-entry {
+    padding: 10px;
+    margin-bottom: 8px; /* Smaller space between entries for better differentiation */
+    border-bottom: 1px solid #eee; /* Subtle line between entries */
+    font-size: 1.2em;
+}
+
+#calorie-list {
+    padding: 10px;
+    border: 2px solid #ccc;
+    background: #fff;
+}
+
+#food-image {
+    display: block; /* Ensures the image is on its own line */
+    margin: 20px auto; /* Centers the image and adds space above and below */
+    width: 80%; /* Set the width larger than its container */
+    height: 600px; /* Set a specific height, altering the aspect ratio */
+    object-fit: fill; /* Ensures the image covers the set dimensions without distortion */
+    transform: translateX(-10%); /* Centers the wider image */
+}
+
+#entries div {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+#log-entries {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* Creates 7 columns */
+    grid-gap: 10px; /* Space between grid items */
+    padding: 20px;
+    max-width: 4000px; /* You can adjust this width based on your preference */
+    margin: 20px auto; /* Centers the grid in the page */
+    background: #fff; /* Optional: sets a background color for the grid container */
+}
+
+.log-entry {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 1.2em;
+    display: flex; /* Ensures content within each entry is flexibly aligned */
+    flex-direction: column; /* Stacks the content vertically */
+    justify-content: space-between; /* Distributes space evenly */
+    align-items: center; /* Aligns items centrally */
+    text-align: center; /* Centers text */
+}
+
+.remove-entry {
+    margin-top: 10px; /* Adds margin at the top for spacing */
+    padding: 5px 10px;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+input[type="date"] {
+    font-size: 1.2em; /* Increase font size for better visibility */
+    padding: 8px 12px; /* Adjust padding to better fit the larger size */
+    border: 2px solid #ccc; /* Optional: make the border thicker for visibility */
+    background-color: white; /* Ensure background contrasts well with text */
+    cursor: pointer; /* Clearly indicate it's clickable */
+    transform: scale(1); /* Scale the element to 2.5 times its original size */
+    transform-origin: left center; /* Adjust the transform origin if needed */
+    margin: 10px; /* Add margin to avoid elements getting too close */
+}
+
+
+#progress-bar-container {
+    width: 100%;
+    background-color: #eee;
+    border: 2px solid #ccc;
+    padding: 5px; /* Slightly thicker padding for the container */
+}
+
+#progress-bar {
+    height: 30px; /* Taller progress bar for better visibility */
+    background-color: #4CAF50;
+    text-align: center;
+    color: white;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0; /* Increased footer padding */
+    font-size: 1.2em; /* Larger footer font size */
+}
