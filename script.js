@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const foodItem = document.getElementById('food-item').value;
         const calories = parseInt(document.getElementById('calories').value);
         const protein = parseInt(document.getElementById('protein').value);
-        if (foodItem && calories && protein) {
+        if (foodItem && !isNaN(calories) && !isNaN(protein)) {
             const entries = JSON.parse(localStorage.getItem('calories')) || [];
             entries.push({ foodItem, calories, protein });
             localStorage.setItem('calories', JSON.stringify(entries));
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         const exerciseItem = document.getElementById('exercise-item').value;
         const caloriesBurned = parseInt(document.getElementById('exercise-calories').value);
-        if (exerciseItem && caloriesBurned) {
+        if (exerciseItem && !isNaN(caloriesBurned)) {
             const entries = JSON.parse(localStorage.getItem('calories')) || [];
             entries.push({ foodItem: exerciseItem, calories: -caloriesBurned, protein: 0 });
             localStorage.setItem('calories', JSON.stringify(entries));
@@ -86,8 +86,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     goalForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        calorieGoal = parseInt(document.getElementById('calorie-goal').value);
-        proteinGoal = parseInt(document.getElementById('protein-goal').value);
+        const calorieGoalInput = document.getElementById('calorie-goal').value;
+        const proteinGoalInput = document.getElementById('protein-goal').value;
+        calorieGoal = calorieGoalInput ? parseInt(calorieGoalInput) : calorieGoal;
+        proteinGoal = proteinGoalInput ? parseInt(proteinGoalInput) : proteinGoal;
         if (!isNaN(calorieGoal) && !isNaN(proteinGoal)) {
             localStorage.setItem('calorieGoal', calorieGoal);
             localStorage.setItem('proteinGoal', proteinGoal);
@@ -98,7 +100,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     saveLogButton.addEventListener('click', function() {
-        const date = document.getElementById('log-date').value;
+        const dateInput = document.getElementById('log-date');
+        const date = dateInput.value;
         if (date) {
             const entries = JSON.parse(localStorage.getItem('calorieLog')) || [];
             entries.push({
@@ -144,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const progress = Math.min((currentTotalCalories / calorieGoal) * 100, 100);
         document.getElementById('progress-bar').style.width = `${progress}%`;
         caloriesRemaining.style.color = currentTotalCalories > calorieGoal ? 'red' : 'green';
+        proteinRemaining.style.color = currentTotalProtein > proteinGoal ? 'red' : 'green';
     }
 
     loadEntries(); // Initial load of entries
