@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const logEntriesDiv = document.getElementById('log-entries');
     const resetLogButton = document.getElementById('reset-log-button');
+    const backButton = document.getElementById('back-button');
     loadEntries();
 
     resetLogButton.addEventListener('click', function() {
@@ -9,6 +10,10 @@ document.addEventListener("DOMContentLoaded", function() {
             logEntriesDiv.innerHTML = '<p>No log entries found.</p>';
             alert('Log has been reset.');
         }
+    });
+
+    backButton.addEventListener('click', function() {
+        window.location.href = 'index.html';
     });
 
     function loadEntries() {
@@ -47,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function removeEntry(index) {
         let entries = JSON.parse(localStorage.getItem('calorieLog'));
         entries.splice(index, 1); // Remove the entry at the specified index
-        entries.sort((a, b) => new Date(a.date) - new Date(b.date)); // Re-sort entries after removal
         localStorage.setItem('calorieLog', JSON.stringify(entries));
         loadEntries(); // Refresh the list of entries
     }

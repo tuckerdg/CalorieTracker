@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tucker's Calorie Log</title>
+    <title>Calorie & Protein Log</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Calorie Log</h1>
+        <h1>Calorie & Protein Log</h1>
     </header>
     <main>
-        <div id="log-entries">
-            <!-- Log entries will be loaded here -->
+        <div class="container">
+            <div class="log-panel">
+                <div id="log-entries">
+                    <!-- Log entries will be appended here -->
+                </div>
+                <button id="reset-log-button">Reset Entire Log</button>
+                <button id="back-button">Back to Tracker</button>
+            </div>
         </div>
-        <button onclick="window.location.href='index.html'">Back to Tracker</button>
-        <button id="reset-log-button">Reset Entire Log</button>
     </main>
-    
     <footer>
-        <p>© 2024 Tucker's Calorie Tracker. All rights reserved.</p>
+        <p>© 2024 Calorie & Protein Tracker. All rights reserved.</p>
     </footer>
     <script src="log.js"></script>
 </body>

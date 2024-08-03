@@ -16,6 +16,7 @@ header {
 
 .container {
     display: flex;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
     justify-content: space-around;
     padding: 40px; /* Balanced padding */
     width: 90%; /* Relative width for responsiveness */
@@ -27,6 +28,99 @@ header {
     padding: 30px; /* Consistent padding */
     border: 2px solid #ccc; /* Visibility */
     margin: 15px; /* Space between panels */
+    min-width: 300px; /* Ensure a minimum width */
+}
+
+.goal-area, #input-area {
+    margin-bottom: 60px; /* Increased spacing between forms */
+}
+
+#goal-form, #calorie-form, #exercise-form {
+    margin-bottom: 30px; /* Increased form spacing */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.log-entry {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.remove-entry {
+    position: absolute;
+    top: 10px;  /* Adjust to better fit within the entry */
+    right: 10px; /* Ensure it does not overlap content */
+    background-color: #ff6347; /* Tomato red for removal */
+    color: white;
+    border: none;
+    padding: 5px 10px;  /* Smaller padding */
+    font-size: 0.8em;  /* Smaller font size */
+    cursor: pointer;
+}
+
+input[type="text"], input[type="number"], button {
+    padding: 15px 25px; /* Larger input and button for easier interaction */
+    font-size: 1.2em; /* Larger text in inputs and buttons */
+    border: 2px solid #ccc; /* Thicker borders for inputs */
+}
+
+input[type="date"] {
+    font-size: 1.2em; /* Increase font size for better visibility */
+    padding: 8px 12px; /* Adjust padding to better fit the larger size */
+    border: 2px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    margin: 10px; /* Add margin to avoid elements getting too close */
+}
+
+.calorie-display {
+    padding: 15px;
+    margin-bottom: 15px; /* Adding space between each calorie display */
+    background: #f9f9f9;
+    border: 2px solid #ccc;
+    font-size: 1.5em; /* Larger font for visibility */
+    display: block; /* Ensure each element is treated as a block for vertical stacking */
+}
+
+.calorie-entry {
+    padding: 10px;
+    margin-bottom: 8px; /* Smaller space between entries for better differentiation */
+    border-bottom: 1px solid #eee; /* Subtle line between entries */
+    font-size: 1.2em;
+}
+
+#calorie-list {
+    padding: 10px;
+    border: 2px solid #ccc;
+    background: #fff;
+}
+
+#food-image {
+    display: block; /* Ensures the image is on its own line */
+    margin: 20px auto; /* Centers the image and adds space above and below */
+    width: 80%; /* Set the width larger than its container */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: fill; /* Ensures the image covers the set dimensions without distortion */
+}
+
+#entries div {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 5px;
 }
 
 #log-entries {
@@ -54,16 +148,6 @@ header {
     margin-bottom: 10px; /* Space between entries when they wrap */
 }
 
-input[type="date"] {
-    font-size: 1.2em; /* Larger font size for visibility */
-    padding: 8px 12px; /* Adequate padding */
-    border: 2px solid #ccc;
-    background-color: white;
-    cursor: pointer;
-    transform: scale(2.5); /* Enlarge input as specified */
-    margin: 10px; /* Space around input */
-}
-
 #progress-bar-container {
     width: 100%;
     background-color: #eee;
@@ -84,4 +168,29 @@ footer {
     text-align: center;
     padding: 20px 0;
     font-size: 1.2em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .left-panel, .right-panel {
+        margin: 10px 0;
+    }
+    
+    #log-entries {
+        grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
+    }
+    
+    input[type="text"], input[type="number"], input[type="date"], button {
+        font-size: 1em;
+        padding: 10px 15px;
+    }
+    
+    .calorie-display {
+        font-size: 1.2em;
+    }
 }

@@ -143,11 +143,25 @@ document.addEventListener("DOMContentLoaded", function() {
         caloriesRemaining.textContent = `Remaining Calories: ${calorieGoal - currentTotalCalories}`;
         totalProtein.textContent = `Total Protein: ${currentTotalProtein}g`;
         proteinGoalDisplay.textContent = `Protein Goal: ${proteinGoal}g`;
-        proteinRemaining.textContent = `Remaining Protein: ${proteinGoal - currentTotalProtein}g`;
+        const remainingProtein = proteinGoal - currentTotalProtein;
+        
+        if (remainingProtein >= 0) {
+            proteinRemaining.textContent = `Remaining Protein: ${remainingProtein}g`;
+            if (remainingProtein > proteinGoal * 0.5) {
+                proteinRemaining.style.color = 'red';
+            } else if (remainingProtein > proteinGoal * 0.2) {
+                proteinRemaining.style.color = 'orange';
+            } else {
+                proteinRemaining.style.color = 'yellow';
+            }
+        } else {
+            proteinRemaining.textContent = `Over Protein Goal by: ${-remainingProtein}g`;
+            proteinRemaining.style.color = 'green';
+        }
+
         const progress = Math.min((currentTotalCalories / calorieGoal) * 100, 100);
         document.getElementById('progress-bar').style.width = `${progress}%`;
         caloriesRemaining.style.color = currentTotalCalories > calorieGoal ? 'red' : 'green';
-        proteinRemaining.style.color = currentTotalProtein > proteinGoal ? 'red' : 'green';
     }
 
     loadEntries(); // Initial load of entries
