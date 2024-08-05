@@ -16,27 +16,17 @@ header {
 
 .container {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping for smaller screens */
-    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
     padding: 40px; /* Balanced padding */
     width: 90%; /* Relative width for responsiveness */
     margin: auto; /* Central alignment */
 }
 
-.left-panel, .right-panel {
-    flex: 1;
-    padding: 30px; /* Consistent padding */
-    border: 2px solid #ccc; /* Visibility */
-    margin: 15px; /* Space between panels */
-    min-width: 300px; /* Ensure a minimum width */
-}
-
-.goal-area, #input-area {
-    margin-bottom: 60px; /* Increased spacing between forms */
-}
-
-#goal-form, #calorie-form, #exercise-form {
-    margin-bottom: 30px; /* Increased form spacing */
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; /* Space between buttons and entries */
 }
 
 button {
@@ -53,22 +43,27 @@ button {
 .log-entry {
     background-color: #f9f9f9;
     border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 20px; /* Increase padding for more height */
+    margin-bottom: 40px; /* Increase margin between entries */
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Ensure full width */
+    max-width: 250px; /* Increase maximum width */
 }
 
 .remove-entry {
     position: absolute;
-    top: 10px;  /* Adjust to better fit within the entry */
+    top: 10px; /* Adjust to better fit within the entry */
     right: 10px; /* Ensure it does not overlap content */
     background-color: #ff6347; /* Tomato red for removal */
     color: white;
     border: none;
-    padding: 5px 10px;  /* Smaller padding */
-    font-size: 0.8em;  /* Smaller font size */
+    padding: 5px 10px; /* Smaller padding */
+    font-size: 0.8em; /* Smaller font size */
     cursor: pointer;
 }
 
@@ -109,14 +104,6 @@ input[type="date"] {
     background: #fff;
 }
 
-#food-image {
-    display: block; /* Ensures the image is on its own line */
-    margin: 20px auto; /* Centers the image and adds space above and below */
-    width: 80%; /* Set the width larger than its container */
-    height: auto; /* Maintain aspect ratio */
-    object-fit: fill; /* Ensures the image covers the set dimensions without distortion */
-}
-
 #entries div {
     border-bottom: 1px solid #ccc;
     padding: 10px;
@@ -125,10 +112,10 @@ input[type="date"] {
 
 #log-entries {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* Seven days like a calendar */
-    grid-gap: 10px;
+    grid-template-columns: repeat(7, 1fr); /* Seven columns for log entries */
+    grid-gap: 20px; /* Increase gap between entries */
     padding: 20px;
-    max-width: 90%; /* Adaptive max-width */
+    max-width: 100%; /* Set a maximum width */
     margin: 20px auto;
     background: #fff;
 }
@@ -136,7 +123,7 @@ input[type="date"] {
 .log-entry {
     background-color: #f9f9f9;
     border: 1px solid #ccc;
-    padding: 15px;
+    padding: 20px; /* Increase padding for more height */
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     display: flex;
@@ -145,7 +132,7 @@ input[type="date"] {
     align-items: center;
     text-align: center;
     font-size: 1.2em;
-    margin-bottom: 10px; /* Space between entries when they wrap */
+    margin-bottom: 20px; /* Space between entries when they wrap */
 }
 
 #progress-bar-container {
@@ -182,7 +169,7 @@ footer {
     }
     
     #log-entries {
-        grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust for smaller screens */
     }
     
     input[type="text"], input[type="number"], input[type="date"], button {
@@ -193,4 +180,9 @@ footer {
     .calorie-display {
         font-size: 1.2em;
     }
+}
+
+/* New darker yellow color for visibility */
+.darker-yellow {
+    color: #d4b106; /* Darker shade of yellow for better visibility */
 }

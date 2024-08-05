@@ -19,6 +19,7 @@
             <div class="left-panel">
                 <section id="goal-area">
                     <form id="goal-form">
+                        <input type="number" id="maintenance-calories" placeholder="Set your maintenance calories">
                         <input type="number" id="calorie-goal" placeholder="Set your calorie goal">
                         <input type="number" id="protein-goal" placeholder="Set your protein goal">
                         <button type="submit">Set Goals</button>
@@ -44,7 +45,6 @@
                     <button id="reset-log-button">Reset Log</button>
                     <button id="view-log-button">View Log</button>
                 </section>
-                
             </div>
 
             <!-- Right Panel for Displaying Calorie Data and Progress -->
@@ -52,10 +52,13 @@
                 <div id="calorie-info">
                     <div id="total-calories" class="calorie-display">Total Calories: 0</div>
                     <div id="calorie-goal-display" class="calorie-display">Calorie Goal: 0</div>
+                    <div id="calories-burned" class="calorie-display">Calories Burned: 0</div>
                     <div id="calories-remaining" class="calorie-display">Remaining Calories: 0</div>
                     <div id="total-protein" class="calorie-display">Total Protein: 0g</div>
                     <div id="protein-goal-display" class="calorie-display">Protein Goal: 0g</div>
                     <div id="protein-remaining" class="calorie-display">Remaining Protein: 0g</div>
+                    <div id="maintenance-calories-display" class="calorie-display">Maintenance Calories: 0</div>
+                    <div id="net-calories" class="calorie-display">Net Calories: 0</div>
                 </div>
                 <!-- Progress Bar -->
                 <div id="progress-bar-container">

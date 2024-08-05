@@ -12,48 +12,96 @@ document.addEventListener("DOMContentLoaded", function() {
     const totalProtein = document.getElementById('total-protein');
     const proteinGoalDisplay = document.getElementById('protein-goal-display');
     const proteinRemaining = document.getElementById('protein-remaining');
+    const caloriesBurned = document.getElementById('calories-burned');
+    const maintenanceCaloriesDisplay = document.getElementById('maintenance-calories-display');
+    const netCalories = document.getElementById('net-calories');
 
+    let maintenanceCalories = parseInt(localStorage.getItem('maintenanceCalories')) || 0;
     let calorieGoal = parseInt(localStorage.getItem('calorieGoal')) || 0;
     let proteinGoal = parseInt(localStorage.getItem('proteinGoal')) || 0;
     let currentTotalCalories = 0;
     let currentTotalProtein = 0;
-
-    updateDisplays(); // Initial update for all displays
-    loadEntries();
+    let currentTotalBurned = 0;
 
     function loadEntries() {
         const entries = JSON.parse(localStorage.getItem('calories')) || [];
         calorieList.innerHTML = '';
         currentTotalCalories = 0;
         currentTotalProtein = 0;
+        currentTotalBurned = 0;
         entries.forEach((entry, index) => {
-            addEntryToDOM(entry.foodItem, entry.calories, entry.protein, index);
-            currentTotalCalories += parseInt(entry.calories);
-            currentTotalProtein += parseInt(entry.protein);
+            addEntryToDOM(entry.foodItem, entry.calories, entry.protein, entry.type, index);
+            if (entry.type === 'food') {
+                currentTotalCalories += parseInt(entry.calories);
+                currentTotalProtein += parseInt(entry.protein);
+            } else if (entry.type === 'exercise') {
+                currentTotalBurned += parseInt(entry.calories);
+            }
         });
         updateDisplays();
     }
 
-    function addEntryToDOM(foodItem, calories, protein, index) {
+    function addEntryToDOM(foodItem, calories, protein, type, index) {
         const entry = document.createElement('div');
         entry.classList.add('calorie-entry');
         entry.innerHTML = `<strong>${foodItem}</strong>: ${calories} calories, ${protein}g protein <button class="remove-button" data-index="${index}">Remove</button>`;
         calorieList.appendChild(entry);
     }
 
-    calorieList.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-button')) {
-            const index = e.target.getAttribute('data-index');
-            removeEntry(index);
-        }
-    });
-
     function removeEntry(index) {
         let entries = JSON.parse(localStorage.getItem('calories'));
         entries.splice(index, 1);
         localStorage.setItem('calories', JSON.stringify(entries));
-        loadEntries(); // Reload entries to update the DOM
+        loadEntries();
     }
+
+    function updateDisplays() {
+        totalCalories.textContent = `Total Calories: ${currentTotalCalories}`;
+        calorieGoalDisplay.textContent = `Calorie Goal: ${calorieGoal}`;
+        caloriesBurned.textContent = `Calories Burned: ${currentTotalBurned}`;
+        caloriesRemaining.textContent = `Remaining Calories: ${calorieGoal - (currentTotalCalories - currentTotalBurned)}`;
+        totalProtein.textContent = `Total Protein: ${currentTotalProtein}g`;
+        proteinGoalDisplay.textContent = `Protein Goal: ${proteinGoal}g`;
+        maintenanceCaloriesDisplay.textContent = `Maintenance Calories: ${maintenanceCalories + currentTotalBurned}`;
+        netCalories.textContent = `Net Calories: ${(maintenanceCalories + currentTotalBurned) - currentTotalCalories}`;
+
+        const remainingProtein = proteinGoal - currentTotalProtein;
+        if (remainingProtein >= 0) {
+            proteinRemaining.textContent = `Remaining Protein: ${remainingProtein}g`;
+            if (remainingProtein > proteinGoal * 0.5) {
+                proteinRemaining.style.color = 'red';
+            } else if (remainingProtein > proteinGoal * 0.2) {
+                proteinRemaining.style.color = 'orange';
+            } else {
+                proteinRemaining.style.color = 'yellow darker-yellow';
+            }
+        } else {
+            proteinRemaining.textContent = `Over Protein Goal by: ${-remainingProtein}g`;
+            proteinRemaining.style.color = 'green';
+        }
+
+        const progress = Math.min((currentTotalCalories / calorieGoal) * 100, 100);
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+        caloriesRemaining.style.color = (currentTotalCalories - currentTotalBurned) > calorieGoal ? 'red' : 'green';
+    }
+
+    goalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const maintenanceCaloriesInput = document.getElementById('maintenance-calories').value;
+        const calorieGoalInput = document.getElementById('calorie-goal').value;
+        const proteinGoalInput = document.getElementById('protein-goal').value;
+        maintenanceCalories = maintenanceCaloriesInput ? parseInt(maintenanceCaloriesInput) : maintenanceCalories;
+        calorieGoal = calorieGoalInput ? parseInt(calorieGoalInput) : calorieGoal;
+        proteinGoal = proteinGoalInput ? parseInt(proteinGoalInput) : proteinGoal;
+        if (!isNaN(maintenanceCalories) && !isNaN(calorieGoal) && !isNaN(proteinGoal)) {
+            localStorage.setItem('maintenanceCalories', maintenanceCalories);
+            localStorage.setItem('calorieGoal', calorieGoal);
+            localStorage.setItem('proteinGoal', proteinGoal);
+            updateDisplays();
+        } else {
+            alert('Please enter valid numbers for the goals.');
+        }
+    });
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -62,9 +110,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const protein = parseInt(document.getElementById('protein').value);
         if (foodItem && !isNaN(calories) && !isNaN(protein)) {
             const entries = JSON.parse(localStorage.getItem('calories')) || [];
-            entries.push({ foodItem, calories, protein });
+            entries.push({ foodItem, calories, protein, type: 'food' });
             localStorage.setItem('calories', JSON.stringify(entries));
-            loadEntries(); // Recalculate and reload entries
+            loadEntries();
         } else {
             alert('Please fill in all fields.');
         }
@@ -76,26 +124,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const caloriesBurned = parseInt(document.getElementById('exercise-calories').value);
         if (exerciseItem && !isNaN(caloriesBurned)) {
             const entries = JSON.parse(localStorage.getItem('calories')) || [];
-            entries.push({ foodItem: exerciseItem, calories: -caloriesBurned, protein: 0 });
+            entries.push({ foodItem: exerciseItem, calories: caloriesBurned, protein: 0, type: 'exercise' });
             localStorage.setItem('calories', JSON.stringify(entries));
-            loadEntries(); // Update entries with exercise
+            loadEntries();
         } else {
             alert('Please fill in both fields.');
-        }
-    });
-
-    goalForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const calorieGoalInput = document.getElementById('calorie-goal').value;
-        const proteinGoalInput = document.getElementById('protein-goal').value;
-        calorieGoal = calorieGoalInput ? parseInt(calorieGoalInput) : calorieGoal;
-        proteinGoal = proteinGoalInput ? parseInt(proteinGoalInput) : proteinGoal;
-        if (!isNaN(calorieGoal) && !isNaN(proteinGoal)) {
-            localStorage.setItem('calorieGoal', calorieGoal);
-            localStorage.setItem('proteinGoal', proteinGoal);
-            updateDisplays();  // Recalculate calories and protein to update the display correctly
-        } else {
-            alert('Please enter valid numbers for the goals.');
         }
     });
 
@@ -106,14 +139,12 @@ document.addEventListener("DOMContentLoaded", function() {
             const entries = JSON.parse(localStorage.getItem('calorieLog')) || [];
             entries.push({
                 date: date,
-                remainingCalories: calorieGoal - currentTotalCalories,
                 totalCalories: currentTotalCalories,
                 calorieGoal: calorieGoal,
-                remainingProtein: proteinGoal - currentTotalProtein,
                 totalProtein: currentTotalProtein,
-                proteinGoal: proteinGoal
+                totalBurned: currentTotalBurned,
+                maintenanceCalories: maintenanceCalories
             });
-            // Sort entries by date before saving
             entries.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('calorieLog', JSON.stringify(entries));
             alert('Log saved for ' + date);
@@ -128,41 +159,15 @@ document.addEventListener("DOMContentLoaded", function() {
             calorieList.innerHTML = '';
             currentTotalCalories = 0;
             currentTotalProtein = 0;
+            currentTotalBurned = 0;
             updateDisplays();
             alert('Log has been reset.');
         }
     });
 
     viewLogButton.addEventListener('click', function() {
-        window.location.href = 'log.html'; // Assuming 'log.html' is the log page
+        window.location.href = 'log.html';
     });
 
-    function updateDisplays() {
-        totalCalories.textContent = `Total Calories: ${currentTotalCalories}`;
-        calorieGoalDisplay.textContent = `Calorie Goal: ${calorieGoal}`;
-        caloriesRemaining.textContent = `Remaining Calories: ${calorieGoal - currentTotalCalories}`;
-        totalProtein.textContent = `Total Protein: ${currentTotalProtein}g`;
-        proteinGoalDisplay.textContent = `Protein Goal: ${proteinGoal}g`;
-        const remainingProtein = proteinGoal - currentTotalProtein;
-        
-        if (remainingProtein >= 0) {
-            proteinRemaining.textContent = `Remaining Protein: ${remainingProtein}g`;
-            if (remainingProtein > proteinGoal * 0.5) {
-                proteinRemaining.style.color = 'red';
-            } else if (remainingProtein > proteinGoal * 0.2) {
-                proteinRemaining.style.color = 'orange';
-            } else {
-                proteinRemaining.style.color = 'yellow';
-            }
-        } else {
-            proteinRemaining.textContent = `Over Protein Goal by: ${-remainingProtein}g`;
-            proteinRemaining.style.color = 'green';
-        }
-
-        const progress = Math.min((currentTotalCalories / calorieGoal) * 100, 100);
-        document.getElementById('progress-bar').style.width = `${progress}%`;
-        caloriesRemaining.style.color = currentTotalCalories > calorieGoal ? 'red' : 'green';
-    }
-
-    loadEntries(); // Initial load of entries
+    loadEntries();
 });

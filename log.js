@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     const logEntriesDiv = document.getElementById('log-entries');
     const resetLogButton = document.getElementById('reset-log-button');
-    const backButton = document.getElementById('back-button');
     loadEntries();
 
     resetLogButton.addEventListener('click', function() {
@@ -12,15 +11,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    backButton.addEventListener('click', function() {
-        window.location.href = 'index.html';
-    });
-
     function loadEntries() {
-        let entries = JSON.parse(localStorage.getItem('calorieLog')) || [];
-        // Sort entries by date
-        entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-        
+        const entries = JSON.parse(localStorage.getItem('calorieLog')) || [];
         logEntriesDiv.innerHTML = ''; // Clear existing entries
 
         if (entries.length === 0) {
@@ -32,10 +24,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 entryDiv.innerHTML = `<strong>Date:</strong> ${entry.date}<br>
                                       <strong>Total Calories:</strong> ${entry.totalCalories}<br>
                                       <strong>Calorie Goal:</strong> ${entry.calorieGoal}<br>
-                                      <strong>Remaining Calories:</strong> ${entry.remainingCalories}<br>
                                       <strong>Total Protein:</strong> ${entry.totalProtein}g<br>
-                                      <strong>Protein Goal:</strong> ${entry.proteinGoal}g<br>
-                                      <strong>Remaining Protein:</strong> ${entry.remainingProtein}g
+                                      <strong>Calories Burned:</strong> ${entry.totalBurned}<br>
+                                      <strong>Maintenance Calories:</strong> ${entry.maintenanceCalories + entry.totalBurned}<br>
+                                      <strong>Net Calories:</strong> ${(entry.maintenanceCalories + entry.totalBurned) - entry.totalCalories}
                                       <button class="remove-entry" data-index="${index}">Remove</button>`;
                 logEntriesDiv.appendChild(entryDiv);
             });
@@ -50,8 +42,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     function removeEntry(index) {
-        let entries = JSON.parse(localStorage.getItem('calorieLog'));
-        entries.splice(index, 1); // Remove the entry at the specified index
+        const entries = JSON.parse(localStorage.getItem('calorieLog'));
+        entries.splice(index, 1);
         localStorage.setItem('calorieLog', JSON.stringify(entries));
         loadEntries(); // Refresh the list of entries
     }
