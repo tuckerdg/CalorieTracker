@@ -1,173 +1,218 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById('calorie-form');
-    const exerciseForm = document.getElementById('exercise-form');
-    const goalForm = document.getElementById('goal-form');
-    const saveLogButton = document.getElementById('save-log-button');
-    const resetLogButton = document.getElementById('reset-log-button');
-    const viewLogButton = document.getElementById('view-log-button');
-    const calorieList = document.getElementById('calorie-list');
-    const totalCalories = document.getElementById('total-calories');
-    const calorieGoalDisplay = document.getElementById('calorie-goal-display');
-    const caloriesRemaining = document.getElementById('calories-remaining');
-    const totalProtein = document.getElementById('total-protein');
-    const proteinGoalDisplay = document.getElementById('protein-goal-display');
-    const proteinRemaining = document.getElementById('protein-remaining');
-    const caloriesBurned = document.getElementById('calories-burned');
-    const maintenanceCaloriesDisplay = document.getElementById('maintenance-calories-display');
-    const netCalories = document.getElementById('net-calories');
+document.addEventListener("DOMContentLoaded", function () {
+    
+    const goalForm = document.getElementById("goal-form");
+    const form = document.getElementById("calorie-form");
+    const exerciseForm = document.getElementById("exercise-form");
+    const saveLogButton = document.getElementById("save-log-button");
+    const resetLogButton = document.getElementById("reset-log-button");
+    const logScrollDiv = document.getElementById("log-scroll");
+    const calorieList = document.getElementById("calorie-list");
 
-    let maintenanceCalories = parseInt(localStorage.getItem('maintenanceCalories')) || 0;
-    let calorieGoal = parseInt(localStorage.getItem('calorieGoal')) || 0;
-    let proteinGoal = parseInt(localStorage.getItem('proteinGoal')) || 0;
+    const totalCalories = document.getElementById("total-calories");
+    const calorieGoalDisplay = document.getElementById("calorie-goal-display");
+    const caloriesRemaining = document.getElementById("calories-remaining");
+    const proteinGoalDisplay = document.getElementById("protein-goal-display");
+    const proteinRemaining = document.getElementById("protein-remaining");
+    const caloriesBurned = document.getElementById("calories-burned");
+    const maintenanceCaloriesDisplay = document.getElementById("maintenance-calories-display");
+    let maintenanceCalories = parseInt(localStorage.getItem("maintenanceCalories")) || 0;
+    let calorieGoal = parseInt(localStorage.getItem("calorieGoal")) || 0;
+    let proteinGoal = parseInt(localStorage.getItem("proteinGoal")) || 0;
     let currentTotalCalories = 0;
     let currentTotalProtein = 0;
     let currentTotalBurned = 0;
-
-    function loadEntries() {
-        const entries = JSON.parse(localStorage.getItem('calories')) || [];
-        calorieList.innerHTML = '';
-        currentTotalCalories = 0;
-        currentTotalProtein = 0;
-        currentTotalBurned = 0;
-        entries.forEach((entry, index) => {
-            addEntryToDOM(entry.foodItem, entry.calories, entry.protein, entry.type, index);
-            if (entry.type === 'food') {
-                currentTotalCalories += parseInt(entry.calories);
-                currentTotalProtein += parseInt(entry.protein);
-            } else if (entry.type === 'exercise') {
-                currentTotalBurned += parseInt(entry.calories);
-            }
-        });
-        updateDisplays();
-    }
-
-    function addEntryToDOM(foodItem, calories, protein, type, index) {
-        const entry = document.createElement('div');
-        entry.classList.add('calorie-entry');
-        entry.innerHTML = `<strong>${foodItem}</strong>: ${calories} calories, ${protein}g protein <button class="remove-button" data-index="${index}">Remove</button>`;
-        calorieList.appendChild(entry);
-    }
-
-    function removeEntry(index) {
-        let entries = JSON.parse(localStorage.getItem('calories'));
-        entries.splice(index, 1);
-        localStorage.setItem('calories', JSON.stringify(entries));
-        loadEntries();
-    }
+    updateDisplays();
+    renderEntries();
+    loadLogsToSidebar(); // For the right-panel log history
 
     function updateDisplays() {
-        totalCalories.textContent = `Total Calories: ${currentTotalCalories}`;
+        const entries = JSON.parse(localStorage.getItem("calories")) || [];
+    
+        // Recalculate totals dynamically
+        currentTotalCalories = entries.reduce((sum, entry) => sum + (entry.type === "food" ? entry.calories : 0), 0);
+        currentTotalProtein = entries.reduce((sum, entry) => sum + (entry.type === "food" ? entry.protein : 0), 0);
+        currentTotalBurned = entries.reduce((sum, entry) => sum + (entry.type === "exercise" ? entry.calories : 0), 0);
+    
+        // Update Maintenance Calories and Goals
+        maintenanceCaloriesDisplay.textContent = `Maintenance Calories: ${maintenanceCalories}`;
         calorieGoalDisplay.textContent = `Calorie Goal: ${calorieGoal}`;
-        caloriesBurned.textContent = `Calories Burned: ${currentTotalBurned}`;
-        caloriesRemaining.textContent = `Remaining Calories: ${calorieGoal - (currentTotalCalories - currentTotalBurned)}`;
-        totalProtein.textContent = `Total Protein: ${currentTotalProtein}g`;
         proteinGoalDisplay.textContent = `Protein Goal: ${proteinGoal}g`;
-        maintenanceCaloriesDisplay.textContent = `Maintenance Calories: ${maintenanceCalories + currentTotalBurned}`;
-        netCalories.textContent = `Net Calories: ${(maintenanceCalories + currentTotalBurned) - currentTotalCalories}`;
+    
+        // Update Totals
+        totalCalories.textContent = `Total Calories: ${currentTotalCalories}`;
+        caloriesBurned.textContent = `Calories Burned: ${currentTotalBurned}`;
 
+         // Calculate and Update New Calorie Goal
+        const newCalorieGoal = calorieGoal + currentTotalBurned;
+        document.getElementById("new-calorie-goal").textContent = `New Calorie Goal: ${newCalorieGoal}`;
+
+        // Calculate and Update Remaining Calories
+        const remainingCaloriesValue = calorieGoal - (currentTotalCalories - currentTotalBurned);
+        caloriesRemaining.textContent = `Remaining Calories: ${remainingCaloriesValue}`;
+        caloriesRemaining.style.color = remainingCaloriesValue >= 0 ? "green" : "red";
+    
+        // Calculate Remaining Protein
         const remainingProtein = proteinGoal - currentTotalProtein;
-        if (remainingProtein >= 0) {
-            proteinRemaining.textContent = `Remaining Protein: ${remainingProtein}g`;
-            if (remainingProtein > proteinGoal * 0.5) {
-                proteinRemaining.style.color = 'red';
-            } else if (remainingProtein > proteinGoal * 0.2) {
-                proteinRemaining.style.color = 'orange';
-            } else {
-                proteinRemaining.style.color = 'yellow darker-yellow';
-            }
-        } else {
-            proteinRemaining.textContent = `Over Protein Goal by: ${-remainingProtein}g`;
-            proteinRemaining.style.color = 'green';
-        }
+        proteinRemaining.textContent = remainingProtein >= 0
+            ? `Protein Needed: ${remainingProtein}g`
+            : `Over Protein Goal by: ${-remainingProtein}g`;
+        proteinRemaining.style.color = remainingProtein >= 0 ? "red" : "green";
 
-        const progress = Math.min((currentTotalCalories / calorieGoal) * 100, 100);
-        document.getElementById('progress-bar').style.width = `${progress}%`;
-        caloriesRemaining.style.color = (currentTotalCalories - currentTotalBurned) > calorieGoal ? 'red' : 'green';
     }
+    
 
-    goalForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const maintenanceCaloriesInput = document.getElementById('maintenance-calories').value;
-        const calorieGoalInput = document.getElementById('calorie-goal').value;
-        const proteinGoalInput = document.getElementById('protein-goal').value;
-        maintenanceCalories = maintenanceCaloriesInput ? parseInt(maintenanceCaloriesInput) : maintenanceCalories;
-        calorieGoal = calorieGoalInput ? parseInt(calorieGoalInput) : calorieGoal;
-        proteinGoal = proteinGoalInput ? parseInt(proteinGoalInput) : proteinGoal;
-        if (!isNaN(maintenanceCalories) && !isNaN(calorieGoal) && !isNaN(proteinGoal)) {
-            localStorage.setItem('maintenanceCalories', maintenanceCalories);
-            localStorage.setItem('calorieGoal', calorieGoal);
-            localStorage.setItem('proteinGoal', proteinGoal);
-            updateDisplays();
+    function loadLogsToSidebar() {
+        const entries = JSON.parse(localStorage.getItem("calorieLog")) || [];
+        logScrollDiv.innerHTML = '';
+    
+        if (entries.length === 0) {
+            logScrollDiv.innerHTML = '<p>No log entries found.</p>';
         } else {
-            alert('Please enter valid numbers for the goals.');
-        }
-    });
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const foodItem = document.getElementById('food-item').value;
-        const calories = parseInt(document.getElementById('calories').value);
-        const protein = parseInt(document.getElementById('protein').value);
-        if (foodItem && !isNaN(calories) && !isNaN(protein)) {
-            const entries = JSON.parse(localStorage.getItem('calories')) || [];
-            entries.push({ foodItem, calories, protein, type: 'food' });
-            localStorage.setItem('calories', JSON.stringify(entries));
-            loadEntries();
-        } else {
-            alert('Please fill in all fields.');
-        }
-    });
-
-    exerciseForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const exerciseItem = document.getElementById('exercise-item').value;
-        const caloriesBurned = parseInt(document.getElementById('exercise-calories').value);
-        if (exerciseItem && !isNaN(caloriesBurned)) {
-            const entries = JSON.parse(localStorage.getItem('calories')) || [];
-            entries.push({ foodItem: exerciseItem, calories: caloriesBurned, protein: 0, type: 'exercise' });
-            localStorage.setItem('calories', JSON.stringify(entries));
-            loadEntries();
-        } else {
-            alert('Please fill in both fields.');
-        }
-    });
-
-    saveLogButton.addEventListener('click', function() {
-        const dateInput = document.getElementById('log-date');
-        const date = dateInput.value;
-        if (date) {
-            const entries = JSON.parse(localStorage.getItem('calorieLog')) || [];
-            entries.push({
-                date: date,
-                totalCalories: currentTotalCalories,
-                calorieGoal: calorieGoal,
-                totalProtein: currentTotalProtein,
-                totalBurned: currentTotalBurned,
-                maintenanceCalories: maintenanceCalories
-            });
             entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('calorieLog', JSON.stringify(entries));
-            alert('Log saved for ' + date);
+            entries.forEach((entry, index) => {
+                const logDiv = document.createElement("div");
+                logDiv.classList.add("log-entry");
+                logDiv.innerHTML = `
+                    <strong>${entry.date}</strong><br>
+                    Calories: ${entry.totalCalories}<br>
+                    Protein: ${entry.totalProtein}g<br>
+                    Burned: ${entry.totalBurned}<br>
+                    <button class="remove-log" data-index="${index}">Remove</button>
+                `;
+                logScrollDiv.appendChild(logDiv);
+            });
+    
+            // Scroll to the latest log entry
+            logScrollDiv.scrollTop = logScrollDiv.scrollHeight;
+        }
+    }
+    
+    function renderEntries() {
+        const entriesList = document.getElementById("entries-list");
+        const entries = JSON.parse(localStorage.getItem("calories")) || [];
+    
+        entriesList.innerHTML = ''; // Clear the current list
+    
+        if (entries.length === 0) {
+            entriesList.innerHTML = '<p>No entries yet. Start adding food or exercise!</p>';
         } else {
-            alert('Please select a date for the log.');
+            entries.forEach((entry, index) => {
+                const entryDiv = document.createElement("div");
+                entryDiv.classList.add("entry-item");
+    
+                if (entry.type === "food") {
+                    entryDiv.innerHTML = `
+                        <strong>Food:</strong> ${entry.foodItem} <br>
+                        <strong>Calories:</strong> ${entry.calories} <br>
+                        <strong>Protein:</strong> ${entry.protein}g <br>
+                        <button class="remove-entry" data-index="${index}">Remove</button>
+                    `;
+                } else if (entry.type === "exercise") {
+                    entryDiv.innerHTML = `
+                        <strong>Exercise:</strong> ${entry.foodItem} <br>
+                        <strong>Calories Burned:</strong> ${entry.calories} <br>
+                        <button class="remove-entry" data-index="${index}">Remove</button>
+                    `;
+                }
+    
+                entriesList.appendChild(entryDiv);
+            });
+        }
+    }
+    
+    document.getElementById("entries-list").addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-entry")) {
+            const index = e.target.getAttribute("data-index");
+            const entries = JSON.parse(localStorage.getItem("calories")) || [];
+            entries.splice(index, 1); // Remove the selected entry
+            localStorage.setItem("calories", JSON.stringify(entries));
+            renderEntries(); // Refresh the entries list
+            updateDisplays(); // Refresh totals in the summary
         }
     });
+    
+    goalForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        maintenanceCalories = parseInt(document.getElementById("maintenance-calories").value) || maintenanceCalories;
+        calorieGoal = parseInt(document.getElementById("calorie-goal").value) || calorieGoal;
+        proteinGoal = parseInt(document.getElementById("protein-goal").value) || proteinGoal;
 
-    resetLogButton.addEventListener('click', function() {
-        if (confirm('Are you sure you want to reset the log?')) {
-            localStorage.removeItem('calories');
-            calorieList.innerHTML = '';
+        localStorage.setItem("maintenanceCalories", maintenanceCalories);
+        localStorage.setItem("calorieGoal", calorieGoal);
+        localStorage.setItem("proteinGoal", proteinGoal);
+        updateDisplays();
+    });
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const foodItem = document.getElementById("food-item").value;
+        const calories = parseInt(document.getElementById("calories").value);
+        const protein = parseInt(document.getElementById("protein").value);
+    
+        if (foodItem && !isNaN(calories) && !isNaN(protein)) {
+            const entries = JSON.parse(localStorage.getItem("calories")) || [];
+            entries.push({ foodItem, calories, protein, type: "food" });
+            localStorage.setItem("calories", JSON.stringify(entries));
+            renderEntries();
+            updateDisplays(); // Refresh totals in the summary
+        } else {
+            alert("Please fill in all fields.");
+        }
+    });
+    
+    exerciseForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const exerciseItem = document.getElementById("exercise-item").value;
+        const caloriesBurnedInput = parseInt(document.getElementById("exercise-calories").value);
+    
+        if (exerciseItem && !isNaN(caloriesBurnedInput)) {
+            const entries = JSON.parse(localStorage.getItem("calories")) || [];
+            entries.push({ foodItem: exerciseItem, calories: caloriesBurnedInput, type: "exercise" });
+            localStorage.setItem("calories", JSON.stringify(entries));
+            renderEntries();
+            updateDisplays(); // Refresh totals in the summary
+        } else {
+            alert("Please fill in all fields.");
+        }
+    });
+    
+    logScrollDiv.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-log")) {
+            const index = e.target.getAttribute("data-index");
+            const calorieLog = JSON.parse(localStorage.getItem("calorieLog")) || [];
+            calorieLog.splice(index, 1); // Remove the selected log
+            localStorage.setItem("calorieLog", JSON.stringify(calorieLog));
+            loadLogsToSidebar(); // Refresh the log history
+        }
+    });
+    
+    saveLogButton.addEventListener("click", () => {
+        const logDate = document.getElementById("log-date").value;
+        const calorieLog = JSON.parse(localStorage.getItem("calorieLog")) || [];
+        calorieLog.push({
+            date: logDate,
+            totalCalories: currentTotalCalories,
+            totalProtein: currentTotalProtein,
+            totalBurned: currentTotalBurned,
+        });
+        localStorage.setItem("calorieLog", JSON.stringify(calorieLog));
+        loadLogsToSidebar();
+    });
+
+    resetLogButton.addEventListener("click", () => {
+        if (confirm("Are you sure you want to reset all entries?")) {
+            localStorage.removeItem("calories"); // Clear food and exercise data
+            localStorage.removeItem("calorieLog"); // Clear log history
             currentTotalCalories = 0;
             currentTotalProtein = 0;
             currentTotalBurned = 0;
             updateDisplays();
-            alert('Log has been reset.');
+            renderEntries();
+            loadLogsToSidebar();
         }
     });
+    
 
-    viewLogButton.addEventListener('click', function() {
-        window.location.href = 'log.html';
-    });
-
-    loadEntries();
+    updateDisplays();
+    loadLogsToSidebar();
 });

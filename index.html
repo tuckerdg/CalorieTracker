@@ -3,82 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tucker's Calorie & Protein Tracker</title>
+    <title>Calorie & Protein Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header with Large Title -->
     <header>
-        <h1>Tucker's Calorie & Protein Tracker</h1>
+        <h1>Calorie & Protein Tracker</h1>
     </header>
 
-    <!-- Main Container -->
-    <main>
-        <div class="container">
-            <!-- Left Panel for Input and Goal Setting -->
-            <div class="left-panel">
-                <section id="goal-area">
-                    <form id="goal-form">
-                        <input type="number" id="maintenance-calories" placeholder="Set your maintenance calories">
-                        <input type="number" id="calorie-goal" placeholder="Set your calorie goal">
-                        <input type="number" id="protein-goal" placeholder="Set your protein goal">
-                        <button type="submit">Set Goals</button>
-                    </form>
-                </section>
-                <section id="input-area">
-                    <h2>Enter Food:</h2>
-                    <form id="calorie-form">
-                        <input type="text" id="food-item" placeholder="Enter food item" size="20">
-                        <input type="number" id="calories" placeholder="Calories" size="20">
-                        <input type="number" id="protein" placeholder="Protein (g)" size="20">
-                        <button type="submit">Add to Tracker</button>
-                    </form>
-                    <h2>Enter Exercise:</h2>
-                    <form id="exercise-form">
-                        <input type="text" id="exercise-item" placeholder="Enter exercise type" size="20">
-                        <input type="number" id="exercise-calories" placeholder="Calories burned" size="20">
-                        <button type="submit">Add Exercise</button>
-                    </form>
-                    <!-- Separate Save and Reset Buttons -->
-                    <input type="date" id="log-date">
-                    <button id="save-log-button">Save Log</button>
-                    <button id="reset-log-button">Reset Log</button>
-                    <button id="view-log-button">View Log</button>
-                </section>
-            </div>
+    <div class="container">
+        <!-- Left Panel: Forms -->
+        <div class="left-panel">
+            <h2>Set Your Goals</h2>
+            <form id="goal-form">
+                <input type="number" id="maintenance-calories" placeholder="Maintenance Calories">
+                <input type="number" id="calorie-goal" placeholder="Calorie Goal">
+                <input type="number" id="protein-goal" placeholder="Protein Goal (g)">
+                <button type="submit">Set Goals</button>
+            </form>
 
-            <!-- Right Panel for Displaying Calorie Data and Progress -->
-            <div class="right-panel">
+            <h2>Enter Food:</h2>
+            <form id="calorie-form">
+                <input type="text" id="food-item" placeholder="Enter food item">
+                <input type="number" id="calories" placeholder="Calories">
+                <input type="number" id="protein" placeholder="Protein (g)">
+                <button type="submit">Add Food</button>
+            </form>
+
+            <h2>Enter Exercise:</h2>
+            <form id="exercise-form">
+                <input type="text" id="exercise-item" placeholder="Enter exercise type">
+                <input type="number" id="exercise-calories" placeholder="Calories Burned">
+                <button type="submit">Add Exercise</button>
+            </form>
+
+            <input type="date" id="log-date" />
+            <button id="save-log-button">Save Log</button>
+            <button id="reset-log-button">Reset Log</button>
+        </div>
+
+               <!-- Center Panel: Summary -->
+               <div class="center-panel">
+                <h2>Summary</h2>
                 <div id="calorie-info">
-                    <div id="total-calories" class="calorie-display">Total Calories: 0</div>
-                    <div id="calorie-goal-display" class="calorie-display">Calorie Goal: 0</div>
-                    <div id="calories-burned" class="calorie-display">Calories Burned: 0</div>
-                    <div id="calories-remaining" class="calorie-display">Remaining Calories: 0</div>
-                    <div id="total-protein" class="calorie-display">Total Protein: 0g</div>
-                    <div id="protein-goal-display" class="calorie-display">Protein Goal: 0g</div>
-                    <div id="protein-remaining" class="calorie-display">Remaining Protein: 0g</div>
                     <div id="maintenance-calories-display" class="calorie-display">Maintenance Calories: 0</div>
-                    <div id="net-calories" class="calorie-display">Net Calories: 0</div>
+                    <div id="calorie-goal-display" class="calorie-display">Calorie Goal: 0</div>
+                    <div id="protein-goal-display" class="calorie-display">Protein Goal: 0g</div>
+                    <br></br>
+                    <div id="total-calories" class="calorie-display">Total Calories: 0</div>
+                    <div id="calories-burned" class="calorie-display">Calories Burned: 0</div>
+                    <div id="new-calorie-goal" class="calorie-display">New Calorie Goal: 0</div> <!-- Added this -->
+                    <div id="calories-remaining" class="calorie-display">Remaining Calories: 0</div>
+                    <div id="protein-remaining" class="calorie-display">Remaining Protein: 0g</div>
                 </div>
-                <!-- Progress Bar -->
-                <div id="progress-bar-container">
-                    <div id="progress-bar" style="width: 0%;"></div>
+    
+                <!-- Food and Exercise Entries -->
+                <div id="entries-container" class="entries-container">
+                    <h3>Today's Consumption</h3>
+                    <div id="entries-list" class="entries-list">
+                        <!-- Food and Exercise Entries Will Be Added Here Dynamically -->
+                    </div>
                 </div>
-                <!-- Calorie List -->
-                <div id="calorie-list">
-                    <h2>Today's Consumption:</h2>
-                    <!-- List of items will be appended here -->
-                </div>
+            </div>
+    
+
+        <!-- Right Panel: Log History -->
+        <div class="right-panel">
+            <h2>Log History</h2>
+            <div id="log-scroll" class="log-scroll">
+                <!-- Logs will dynamically appear here -->
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Footer -->
     <footer>
         <p>© 2024 Calorie & Protein Tracker. All rights reserved.</p>
     </footer>
 
-    <!-- Link to JavaScript File -->
     <script src="script.js"></script>
 </body>
 </html>
