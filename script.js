@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("calorie-form");
     const exerciseForm = document.getElementById("exercise-form");
     const saveLogButton = document.getElementById("save-log-button");
-    const resetLogButton = document.getElementById("reset-log-button");
+    const resetTodayButton = document.getElementById("reset-today-button");
     const logScrollDiv = document.getElementById("log-scroll");
     const calorieList = document.getElementById("calorie-list");
 
@@ -25,6 +25,26 @@ document.addEventListener("DOMContentLoaded", function () {
     renderEntries();
     loadLogsToSidebar(); // For the right-panel log history
 
+    resetTodayButton.addEventListener("click", function () {
+        if (confirm("Are you sure you want to reset today's log? This will only clear today's entries.")) {
+            // Clear today's food and exercise entries from localStorage
+            localStorage.removeItem("calories");
+    
+            // Reset all current totals and state variables
+            currentTotalCalories = 0;
+            currentTotalProtein = 0;
+            currentTotalBurned = 0;
+    
+            // Clear the entries list from the DOM
+            renderEntries(); // Refresh the displayed entries list
+            updateDisplays(); // Update the summary fields
+    
+            alert("Today's log has been reset.");
+        }
+    });
+    
+    
+
     function updateDisplays() {
         const entries = JSON.parse(localStorage.getItem("calories")) || [];
     
@@ -41,11 +61,14 @@ document.addEventListener("DOMContentLoaded", function () {
         // Update Totals
         totalCalories.textContent = `Total Calories: ${currentTotalCalories}`;
         caloriesBurned.textContent = `Calories Burned: ${currentTotalBurned}`;
-
-         // Calculate and Update New Calorie Goal
+    
+        // Calculate and Update New Calorie Goal
         const newCalorieGoal = calorieGoal + currentTotalBurned;
-        document.getElementById("new-calorie-goal").textContent = `New Calorie Goal: ${newCalorieGoal}`;
-
+        const newCalorieGoalDisplay = document.getElementById("new-calorie-goal");
+        if (newCalorieGoalDisplay) {
+            newCalorieGoalDisplay.textContent = `New Calorie Goal: ${newCalorieGoal}`;
+        }
+    
         // Calculate and Update Remaining Calories
         const remainingCaloriesValue = calorieGoal - (currentTotalCalories - currentTotalBurned);
         caloriesRemaining.textContent = `Remaining Calories: ${remainingCaloriesValue}`;
@@ -57,8 +80,8 @@ document.addEventListener("DOMContentLoaded", function () {
             ? `Protein Needed: ${remainingProtein}g`
             : `Over Protein Goal by: ${-remainingProtein}g`;
         proteinRemaining.style.color = remainingProtein >= 0 ? "red" : "green";
-
     }
+    
     
 
     function loadLogsToSidebar() {
@@ -199,18 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
         loadLogsToSidebar();
     });
 
-    resetLogButton.addEventListener("click", () => {
-        if (confirm("Are you sure you want to reset all entries?")) {
-            localStorage.removeItem("calories"); // Clear food and exercise data
-            localStorage.removeItem("calorieLog"); // Clear log history
-            currentTotalCalories = 0;
-            currentTotalProtein = 0;
-            currentTotalBurned = 0;
-            updateDisplays();
-            renderEntries();
-            loadLogsToSidebar();
-        }
-    });
+
     
 
     updateDisplays();
