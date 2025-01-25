@@ -83,7 +83,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     
+    const weightForm = document.getElementById("weight-form");
 
+    weightForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const weight = parseFloat(document.getElementById("weight").value);
+    
+        if (!isNaN(weight)) {
+            const entries = JSON.parse(localStorage.getItem("calories")) || [];
+            entries.push({ type: "weight", weight });
+            localStorage.setItem("calories", JSON.stringify(entries));
+            renderEntries();
+            updateDisplays();
+        } else {
+            alert("Please enter a valid weight.");
+        }
+    });
+    
     function loadLogsToSidebar() {
         const entries = JSON.parse(localStorage.getItem("calorieLog")) || [];
         logScrollDiv.innerHTML = '';
@@ -96,12 +112,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const logDiv = document.createElement("div");
                 logDiv.classList.add("log-entry");
                 logDiv.innerHTML = `
-                    <strong>${entry.date}</strong><br>
-                    Calories: ${entry.totalCalories}<br>
-                    Protein: ${entry.totalProtein}g<br>
-                    Burned: ${entry.totalBurned}<br>
-                    <button class="remove-log" data-index="${index}">Remove</button>
-                `;
+    <strong>${entry.date}</strong><br>
+    Calories: ${entry.totalCalories}<br>
+    Protein: ${entry.totalProtein}g<br>
+    Burned: ${entry.totalBurned}<br>
+    Weight: ${entry.weight !== null && entry.weight !== undefined ? entry.weight + ' lbs' : 'N/A'}<br>
+    <button class="remove-log" data-index="${index}">Remove</button>
+`;
                 logScrollDiv.appendChild(logDiv);
             });
     
@@ -109,7 +126,6 @@ document.addEventListener("DOMContentLoaded", function () {
             logScrollDiv.scrollTop = logScrollDiv.scrollHeight;
         }
     }
-    
     function renderEntries() {
         const entriesList = document.getElementById("entries-list");
         const entries = JSON.parse(localStorage.getItem("calories")) || [];
@@ -117,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         entriesList.innerHTML = ''; // Clear the current list
     
         if (entries.length === 0) {
-            entriesList.innerHTML = '<p>No entries yet. Start adding food or exercise!</p>';
+            entriesList.innerHTML = '<p>No entries yet. Start adding food, exercise, or weight!</p>';
         } else {
             entries.forEach((entry, index) => {
                 const entryDiv = document.createElement("div");
@@ -134,6 +150,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     entryDiv.innerHTML = `
                         <strong>Exercise:</strong> ${entry.foodItem} <br>
                         <strong>Calories Burned:</strong> ${entry.calories} <br>
+                        <button class="remove-entry" data-index="${index}">Remove</button>
+                    `;
+                } else if (entry.type === "weight") {
+                    entryDiv.innerHTML = `
+                        <strong>Weight:</strong> ${entry.weight} lbs <br>
                         <button class="remove-entry" data-index="${index}">Remove</button>
                     `;
                 }
@@ -211,17 +232,21 @@ document.addEventListener("DOMContentLoaded", function () {
     
     saveLogButton.addEventListener("click", () => {
         const logDate = document.getElementById("log-date").value;
+        const weight = parseFloat(document.getElementById("weight").value) || null; // Get the weight value
         const calorieLog = JSON.parse(localStorage.getItem("calorieLog")) || [];
         calorieLog.push({
             date: logDate,
             totalCalories: currentTotalCalories,
             totalProtein: currentTotalProtein,
             totalBurned: currentTotalBurned,
+            weight: weight // Ensure weight is saved
         });
         localStorage.setItem("calorieLog", JSON.stringify(calorieLog));
         loadLogsToSidebar();
+    
+        // Clear the weight input field after saving
+        document.getElementById("weight").value = '';
     });
-
 
     
 

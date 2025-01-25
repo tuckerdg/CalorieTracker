@@ -88,7 +88,7 @@ input[type="text"], input[type="number"] {
 }
 
 
-/* Individual Log Entry */
+/* Ensure the log entry styling remains consistent */
 .log-entry {
     margin-bottom: 15px;
     background-color: #e3f2fd;
@@ -98,6 +98,16 @@ input[type="text"], input[type="number"] {
     text-align: left;
     font-size: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure the weight input field fits well in the left panel */
+#weight-form input {
+    width: 70%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1em;
+    border: 2px solid #ccc;
+    border-radius: 5px;
 }
 
 /* Remove Button for Logs */
