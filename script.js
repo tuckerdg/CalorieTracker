@@ -112,13 +112,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const logDiv = document.createElement("div");
                 logDiv.classList.add("log-entry");
                 logDiv.innerHTML = `
-    <strong>${entry.date}</strong><br>
-    Calories: ${entry.totalCalories}<br>
-    Protein: ${entry.totalProtein}g<br>
-    Burned: ${entry.totalBurned}<br>
-    Weight: ${entry.weight !== null && entry.weight !== undefined ? entry.weight + ' lbs' : 'N/A'}<br>
-    <button class="remove-log" data-index="${index}">Remove</button>
-`;
+                    <strong>${entry.date}</strong><br>
+                    Calories: ${entry.totalCalories}<br>
+                    Protein: ${entry.totalProtein}g<br>
+                    Burned: ${entry.totalBurned}<br>
+                    Weight: ${entry.weight !== null && entry.weight !== undefined ? parseFloat(entry.weight).toFixed(1) + ' lbs' : 'N/A'}<br>
+                    <button class="remove-log" data-index="${index}">Remove</button>
+                `;
                 logScrollDiv.appendChild(logDiv);
             });
     
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                 } else if (entry.type === "weight") {
                     entryDiv.innerHTML = `
-                        <strong>Weight:</strong> ${entry.weight} lbs <br>
+                        <strong>Weight:</strong> ${parseFloat(entry.weight).toFixed(1)} lbs <br>
                         <button class="remove-entry" data-index="${index}">Remove</button>
                     `;
                 }
@@ -232,14 +232,19 @@ document.addEventListener("DOMContentLoaded", function () {
     
     saveLogButton.addEventListener("click", () => {
         const logDate = document.getElementById("log-date").value;
-        const weight = parseFloat(document.getElementById("weight").value) || null; // Get the weight value
+    
+        // Retrieve the latest weight entry from the calories localStorage
+        const entries = JSON.parse(localStorage.getItem("calories")) || [];
+        const latestWeightEntry = entries.reverse().find(entry => entry.type === "weight");
+        const weight = latestWeightEntry ? latestWeightEntry.weight : null;
+    
         const calorieLog = JSON.parse(localStorage.getItem("calorieLog")) || [];
         calorieLog.push({
             date: logDate,
             totalCalories: currentTotalCalories,
             totalProtein: currentTotalProtein,
             totalBurned: currentTotalBurned,
-            weight: weight // Ensure weight is saved
+            weight: weight // Use the weight from the latest weight entry
         });
         localStorage.setItem("calorieLog", JSON.stringify(calorieLog));
         loadLogsToSidebar();
