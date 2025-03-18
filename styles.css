@@ -43,7 +43,6 @@ header {
     overflow-y: auto; /* Keep scrolling for the panel if necessary */
 }
 
-
 /* Buttons */
 button {
     padding: 10px 20px;
@@ -86,7 +85,6 @@ input[type="text"], input[type="number"] {
     border-radius: 8px;
     background-color: #ffffff;
 }
-
 
 /* Ensure the log entry styling remains consistent */
 .log-entry {
@@ -211,4 +209,3 @@ p, input, button {
 .entry-item button:hover {
     background-color: #e55347;
 }
-
