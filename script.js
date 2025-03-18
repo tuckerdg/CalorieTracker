@@ -1,11 +1,12 @@
-/****************************************************/
-/*  1) INITIALIZE FIREBASE (Compat syntax, no NPM)  */
-/****************************************************/
+/****************************************************
+ * 1) INITIALIZE FIREBASE (Compat syntax, no NPM)
+ ****************************************************/
 const firebaseConfig = {
-    apiKey: "AIzaSyBmQNNdFoU7homZ1UQ6HOkH1sjkowfBmW0",
+    // Replace with your own config from Firebase Console → Project settings → "Your apps"
+    apiKey: "AIzaSyB...N1UQ6HOkH1sjkowfBmW0",
     authDomain: "calorie-tracker-7b84f.firebaseapp.com",
     projectId: "calorie-tracker-7b84f",
-    storageBucket: "calorie-tracker-7b84f.firebasestorage.app",
+    storageBucket: "calorie-tracker-7b84f.appspot.com", // Note: .appspot.com is typical for storage
     messagingSenderId: "60409261415",
     appId: "1:60409261415:web:de6dd9410206163eee53c2",
     measurementId: "G-YJQPVL2N0Q"
@@ -14,49 +15,18 @@ const firebaseConfig = {
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();      // Firestore DB
-  const analytics = firebase.analytics(); // (Optional) Firebase Analytics
+  // optional analytics
+  const analytics = firebase.analytics(); 
   
-  /****************************************************/
-  /*  2) MIGRATE LOCALSTORAGE LOGS (OPTIONAL, ONE-TIME) */
-  /****************************************************/
-  // If you want to migrate your existing localStorage logs to Firestore
-  // once, uncomment and call `migrateLocalLogsToFirestore()` below.
-  async function migrateLocalLogsToFirestore() {
-    // Migrate "calories" entries
-    const localEntries = JSON.parse(localStorage.getItem("calories")) || [];
-    if (localEntries.length > 0) {
-      for (const entry of localEntries) {
-        await db.collection("caloriesEntries").add({ ...entry, migratedAt: new Date().toISOString() });
-      }
-      localStorage.removeItem("calories");
-    }
   
-    // Migrate "calorieLog"
-    const localCalorieLog = JSON.parse(localStorage.getItem("calorieLog")) || [];
-    if (localCalorieLog.length > 0) {
-      for (const logEntry of localCalorieLog) {
-        await db.collection("calorieLogHistory").add({ ...logEntry, migratedAt: new Date().toISOString() });
-      }
-      localStorage.removeItem("calorieLog");
-    }
-  }
-  
-  /****************************************************/
-  /*  3) DOMContentLoaded: Hook up all your forms      */
-  /****************************************************/
   document.addEventListener("DOMContentLoaded", function () {
-    // Uncomment to migrate once if you want
-    // migrateLocalLogsToFirestore();
+    const goalForm        = document.getElementById("goal-form");
+    const form            = document.getElementById("calorie-form");
+    const exerciseForm    = document.getElementById("exercise-form");
+    const weightForm      = document.getElementById("weight-form");
+    const saveLogButton   = document.getElementById("save-log-button");
+    const resetTodayButton= document.getElementById("reset-today-button");
   
-    const goalForm = document.getElementById("goal-form");
-    const form = document.getElementById("calorie-form");
-    const exerciseForm = document.getElementById("exercise-form");
-    const saveLogButton = document.getElementById("save-log-button");
-    const resetTodayButton = document.getElementById("reset-today-button");
-    const logScrollDiv = document.getElementById("log-scroll");
-    const weightForm = document.getElementById("weight-form");
-  
-    // Display fields
     const totalCaloriesEl = document.getElementById("total-calories");
     const calorieGoalDisplay = document.getElementById("calorie-goal-display");
     const caloriesRemaining = document.getElementById("calories-remaining");
@@ -65,30 +35,23 @@ const firebaseConfig = {
     const caloriesBurnedEl = document.getElementById("calories-burned");
     const maintenanceCaloriesDisplay = document.getElementById("maintenance-calories-display");
   
-    // Retrieve user goals from localStorage (still stored locally for simplicity)
     let maintenanceCalories = parseInt(localStorage.getItem("maintenanceCalories")) || 0;
-    let calorieGoal = parseInt(localStorage.getItem("calorieGoal")) || 0;
-    let proteinGoal = parseInt(localStorage.getItem("proteinGoal")) || 0;
+    let calorieGoal        = parseInt(localStorage.getItem("calorieGoal")) || 0;
+    let proteinGoal        = parseInt(localStorage.getItem("proteinGoal")) || 0;
   
-    // Update the text fields based on localStorage
-    updateDisplays();
-  
-    // For the right-panel log history
-    loadLogsToSidebar();
+    // RENDER ENTRIES + CALENDAR ON LOAD
     renderEntries();
+    updateDisplays();
+    initCalendar();
   
-    /****************************************************/
-    /*  "Reset Today's Log" - this will delete today's  */
-    /*   entries from Firestore in this naive example.  */
-    /****************************************************/
+    /****************************************************
+     * "Reset Today's Log" - naive example removing ALL entries from "caloriesEntries"
+     ****************************************************/
     resetTodayButton.addEventListener("click", async function () {
-      if (confirm("Are you sure you want to reset today's log? This will clear today's entries in Firestore.")) {
-        // We don't track "today" with a date in this code, so let's just delete everything in the "caloriesEntries" collection.
-        // If you want day-by-day, you'll need a "date" field in each entry so you only remove today's items.
+      if (confirm("Are you sure you want to reset today's log? This will clear everything in 'caloriesEntries'.")) {
         const snapshot = await db.collection("caloriesEntries").get();
         const batch = db.batch();
         snapshot.forEach(doc => {
-          // Remove each doc
           batch.delete(doc.ref);
         });
         await batch.commit();
@@ -99,9 +62,9 @@ const firebaseConfig = {
       }
     });
   
-    /****************************************************/
-    /*  Update top-of-page displays: totals, goals, etc. */
-    /****************************************************/
+    /****************************************************
+     * Update the top-of-page displays (totals, goals, etc.)
+     ****************************************************/
     async function updateDisplays() {
       // get all entries from Firestore
       const entriesSnapshot = await db.collection("caloriesEntries").get();
@@ -121,13 +84,14 @@ const firebaseConfig = {
   
       // Maintenance & Goals
       maintenanceCaloriesDisplay.textContent = `Maintenance Calories: ${maintenanceCalories}`;
-      calorieGoalDisplay.textContent = `Calorie Goal: ${calorieGoal}`;
-      proteinGoalDisplay.textContent = `Protein Goal: ${proteinGoal}g`;
+      calorieGoalDisplay.textContent         = `Calorie Goal: ${calorieGoal}`;
+      proteinGoalDisplay.textContent         = `Protein Goal: ${proteinGoal}g`;
   
       // Summaries
-      totalCaloriesEl.textContent = `Total Calories: ${currentTotalCalories}`;
-      caloriesBurnedEl.textContent = `Calories Burned: ${currentTotalBurned}`;
+      totalCaloriesEl.textContent    = `Total Calories: ${currentTotalCalories}`;
+      caloriesBurnedEl.textContent   = `Calories Burned: ${currentTotalBurned}`;
   
+      // New Calorie Goal
       const newCalorieGoal = calorieGoal + currentTotalBurned;
       const newCalorieGoalDisplay = document.getElementById("new-calorie-goal");
       if (newCalorieGoalDisplay) {
@@ -150,9 +114,9 @@ const firebaseConfig = {
       }
     }
   
-    /****************************************************/
-    /*  RENDER ENTRIES: fetch from Firestore and display */
-    /****************************************************/
+    /****************************************************
+     * Render the "Today's Consumption" entries list
+     ****************************************************/
     async function renderEntries() {
       const entriesList = document.getElementById("entries-list");
       entriesList.innerHTML = '';
@@ -194,7 +158,7 @@ const firebaseConfig = {
       });
     }
   
-    // Listen for remove entry clicks
+    // Removing a single entry
     document.getElementById("entries-list").addEventListener("click", async (e) => {
       if (e.target.classList.contains("remove-entry")) {
         const docId = e.target.getAttribute("data-id");
@@ -204,29 +168,30 @@ const firebaseConfig = {
       }
     });
   
-    /****************************************************/
-    /*               FORMS - EVENT HANDLERS             */
-    /****************************************************/
+    /****************************************************
+     * FORMS
+     ****************************************************/
+  
     // 1) Goals form
     goalForm.addEventListener("submit", (e) => {
       e.preventDefault();
       maintenanceCalories = parseInt(document.getElementById("maintenance-calories").value) || maintenanceCalories;
-      calorieGoal = parseInt(document.getElementById("calorie-goal").value) || calorieGoal;
-      proteinGoal = parseInt(document.getElementById("protein-goal").value) || proteinGoal;
+      calorieGoal        = parseInt(document.getElementById("calorie-goal").value) || calorieGoal;
+      proteinGoal        = parseInt(document.getElementById("protein-goal").value) || proteinGoal;
   
-      // Still store these locally for now
       localStorage.setItem("maintenanceCalories", maintenanceCalories);
       localStorage.setItem("calorieGoal", calorieGoal);
       localStorage.setItem("proteinGoal", proteinGoal);
+  
       updateDisplays();
     });
   
-    // 2) Add Food form
+    // 2) Add Food
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       const foodItem = document.getElementById("food-item").value;
       const calories = parseInt(document.getElementById("calories").value);
-      const protein = parseInt(document.getElementById("protein").value);
+      const protein  = parseInt(document.getElementById("protein").value);
   
       if (foodItem && !isNaN(calories) && !isNaN(protein)) {
         try {
@@ -235,7 +200,7 @@ const firebaseConfig = {
             foodItem: foodItem,
             calories: calories,
             protein: protein,
-            timestamp: new Date().toISOString()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
           });
           renderEntries();
           updateDisplays();
@@ -248,10 +213,10 @@ const firebaseConfig = {
       }
     });
   
-    // 3) Add Exercise form
+    // 3) Add Exercise
     exerciseForm.addEventListener("submit", async function (e) {
       e.preventDefault();
-      const exerciseItem = document.getElementById("exercise-item").value;
+      const exerciseItem      = document.getElementById("exercise-item").value;
       const caloriesBurnedInput = parseInt(document.getElementById("exercise-calories").value);
   
       if (exerciseItem && !isNaN(caloriesBurnedInput)) {
@@ -260,7 +225,7 @@ const firebaseConfig = {
             type: "exercise",
             foodItem: exerciseItem,
             calories: caloriesBurnedInput,
-            timestamp: new Date().toISOString()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
           });
           renderEntries();
           updateDisplays();
@@ -273,7 +238,7 @@ const firebaseConfig = {
       }
     });
   
-    // 4) Add Weight form
+    // 4) Add Weight
     weightForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       const weightValue = parseFloat(document.getElementById("weight").value);
@@ -283,12 +248,12 @@ const firebaseConfig = {
           await db.collection("caloriesEntries").add({
             type: "weight",
             weight: weightValue,
-            timestamp: new Date().toISOString()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
           });
           renderEntries();
           updateDisplays();
         } catch (err) {
-          console.error("Error adding weight:", err);
+          console.error("Error adding weight entry:", err);
           alert("Could not add weight entry.");
         }
       } else {
@@ -296,84 +261,169 @@ const firebaseConfig = {
       }
     });
   
-    /****************************************************/
-    /*   SAVE LOGS (like daily summary) into Firestore  */
-    /****************************************************/
+    /****************************************************
+     * SAVE DAILY LOG -> "calorieLogHistory" with { year, month, day }
+     ****************************************************/
     saveLogButton.addEventListener("click", async () => {
-      const logDate = document.getElementById("log-date").value || new Date().toISOString().slice(0, 10);
+      // The user picks a date, or we default to "today"
+      const rawDate = document.getElementById("log-date").value || new Date().toISOString().slice(0, 10);
+      const dateObj = new Date(rawDate); // e.g. "2025-03-17"
   
-      // Let's get the latest weight from the "caloriesEntries" that is type=weight
-      // We'll just pick the first from a descending order query for demonstration
+      // Extract year/month/day as numbers
+      const year  = dateObj.getFullYear();
+      const month = dateObj.getMonth() + 1; // 1-12
+      const day   = dateObj.getDate();      // 1-31
+  
+      // We'll get the latest weight from "caloriesEntries"
       let weightVal = null;
       try {
         const weightSnapshot = await db.collection("caloriesEntries")
-          .where("type", "==", "weight")
-          .orderBy("timestamp", "desc")
+          .where("type","==","weight")
+          .orderBy("timestamp","desc")
           .limit(1)
           .get();
-  
         if (!weightSnapshot.empty) {
-          weightVal = weightSnapshot.docs[0].data().weight;
+          weightVal = weightSnapshot.docs[0].data().weight || null;
         }
       } catch (err) {
         console.error("Error fetching latest weight:", err);
       }
   
-      // Let’s also fetch current totals for the day
+      // Fetch totals
       const snapshot = await db.collection("caloriesEntries").get();
       const entries = snapshot.docs.map(doc => doc.data());
-      const currentTotalCalories = entries.filter(e => e.type === "food").reduce((sum, e) => sum + (e.calories || 0), 0);
-      const currentTotalProtein = entries.filter(e => e.type === "food").reduce((sum, e) => sum + (e.protein || 0), 0);
-      const currentTotalBurned = entries.filter(e => e.type === "exercise").reduce((sum, e) => sum + (e.calories || 0), 0);
   
-      // Save to a separate collection, e.g., "calorieLogHistory"
+      const currentTotalCalories = entries
+        .filter(e => e.type === "food")
+        .reduce((sum, e) => sum + (e.calories || 0), 0);
+  
+      const currentTotalProtein = entries
+        .filter(e => e.type === "food")
+        .reduce((sum, e) => sum + (e.protein || 0), 0);
+  
+      const currentTotalBurned = entries
+        .filter(e => e.type === "exercise")
+        .reduce((sum, e) => sum + (e.calories || 0), 0);
+  
       await db.collection("calorieLogHistory").add({
-        date: logDate,
+        year: year,
+        month: month,
+        day: day,
         totalCalories: currentTotalCalories,
         totalProtein: currentTotalProtein,
         totalBurned: currentTotalBurned,
         weight: weightVal
       });
+  
       alert("Daily log saved to Firestore!");
-      loadLogsToSidebar();
+      renderCalendar(currentYear, currentMonth); // refresh calendar if it's the same month
     });
   
-    /****************************************************/
-    /*  LOAD LOGS INTO SIDEBAR                          */
-    /****************************************************/
-    async function loadLogsToSidebar() {
-      logScrollDiv.innerHTML = '';
-      const snapshot = await db.collection("calorieLogHistory").orderBy("date").get();
-      if (snapshot.empty) {
-        logScrollDiv.innerHTML = '<p>No log entries found.</p>';
-        return;
-      }
-      snapshot.forEach((doc, index) => {
-        const entry = doc.data();
-        const logDiv = document.createElement("div");
-        logDiv.classList.add("log-entry");
-        logDiv.innerHTML = `
-          <strong>${entry.date}</strong><br>
-          Calories: ${entry.totalCalories || 0}<br>
-          Protein: ${entry.totalProtein || 0}g<br>
-          Burned: ${entry.totalBurned || 0}<br>
-          Weight: ${entry.weight !== null && entry.weight !== undefined 
-                    ? parseFloat(entry.weight).toFixed(1) + ' lbs' 
-                    : 'N/A'}<br>
-          <button class="remove-log" data-id="${doc.id}">Remove</button>
-        `;
-        logScrollDiv.appendChild(logDiv);
+  
+    /****************************************************
+     * MONTHLY CALENDAR - Right Panel
+     ****************************************************/
+    const prevMonthBtn       = document.getElementById("prev-month-btn");
+    const nextMonthBtn       = document.getElementById("next-month-btn");
+    const calendarMonthLabel = document.getElementById("calendar-month-label");
+    const calendarGrid       = document.getElementById("calendar-grid");
+  
+    let currentYear  = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1; // 1-12
+  
+    function initCalendar() {
+      // render once
+      renderCalendar(currentYear, currentMonth);
+  
+      // handle nav
+      prevMonthBtn.addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 1) {
+          currentMonth = 12;
+          currentYear--;
+        }
+        renderCalendar(currentYear, currentMonth);
       });
-      logScrollDiv.scrollTop = logScrollDiv.scrollHeight;
+  
+      nextMonthBtn.addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 12) {
+          currentMonth = 1;
+          currentYear++;
+        }
+        renderCalendar(currentYear, currentMonth);
+      });
     }
   
-    // Remove a log from the sidebar
-    logScrollDiv.addEventListener("click", async (e) => {
-      if (e.target.classList.contains("remove-log")) {
-        const docId = e.target.getAttribute("data-id");
-        await db.collection("calorieLogHistory").doc(docId).delete();
-        loadLogsToSidebar();
+    async function renderCalendar(year, month) {
+      // Clear old cells
+      calendarGrid.innerHTML = "";
+  
+      // Month label e.g. "March 2025"
+      const monthNames = ["January","February","March","April","May","June","July",
+                          "August","September","October","November","December"];
+      calendarMonthLabel.textContent = `${monthNames[month-1]} ${year}`;
+  
+      // 1) Query Firestore for logs in this month
+      const logsSnapshot = await db.collection("calorieLogHistory")
+        .where("year","==",year)
+        .where("month","==",month)
+        .get();
+  
+      // Create day -> log map
+      const logMap = {};
+      logsSnapshot.forEach(doc => {
+        const data = doc.data();
+        logMap[data.day] = data; // day => { totalCalories, weight, etc. }
+      });
+  
+      // 2) Figure out the weekday of the 1st (Sunday=0, Monday=1, etc.)
+      const firstDay = new Date(year, month-1, 1);
+      let startWeekday = firstDay.getDay(); 
+  
+      // 3) How many days in that month?
+      const daysInMonth = new Date(year, month, 0).getDate(); 
+  
+      // 4) Create empty cells for days before the 1st
+      for (let i=0; i<startWeekday; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.classList.add("calendar-cell");
+        calendarGrid.appendChild(emptyCell);
       }
-    });
+  
+      // 5) Fill in each day of the month
+      for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+        const cell = document.createElement("div");
+        cell.classList.add("calendar-cell");
+  
+        const dateDiv = document.createElement("div");
+        dateDiv.classList.add("calendar-date");
+        dateDiv.textContent = dayNum;
+        cell.appendChild(dateDiv);
+  
+        // If there's a log for this day
+        const logData = logMap[dayNum];
+        if (logData) {
+          const calsEl = document.createElement("div");
+          calsEl.textContent = `Calories: ${logData.totalCalories || 0}`;
+          cell.appendChild(calsEl);
+  
+          const protEl = document.createElement("div");
+          protEl.textContent = `Protein: ${logData.totalProtein || 0}`;
+          cell.appendChild(protEl);
+  
+          const burnEl = document.createElement("div");
+          burnEl.textContent = `Burned: ${logData.totalBurned || 0}`;
+          cell.appendChild(burnEl);
+  
+          const wgtEl = document.createElement("div");
+          wgtEl.textContent = `Weight: ${logData.weight != null ? logData.weight : "N/A"}`;
+          cell.appendChild(wgtEl);
+        }
+        // else: blank for no log that day
+  
+        calendarGrid.appendChild(cell);
+      }
+    }
   });
   

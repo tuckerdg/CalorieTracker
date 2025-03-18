@@ -4,17 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calorie & Protein Tracker</title>
-  <link rel="stylesheet" href="styles.css">
 
-  <!-- 1) Firebase (Compat) from the CDN -->
-  <!--    This allows you to call "firebase.initializeApp(...)" etc. without npm. -->
+  <!-- Firebase (Compat) from CDN (no npm needed) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
-  <!-- 2) Your main JavaScript (must load AFTER Firebase) -->
-  <!--    "defer" ensures the DOM is ready before the script runs. -->
-  <script src="script.js" defer></script>
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
@@ -22,6 +19,7 @@
   </header>
 
   <div class="container">
+
     <!-- Left Panel: Forms -->
     <div class="left-panel">
       <h2>Set Your Goals</h2>
@@ -53,6 +51,7 @@
         <button type="submit">Add Weight</button>
       </form>
 
+      <!-- Choose a date to log -->
       <input type="date" id="log-date" />
       <button id="save-log-button">Save Log</button>
       <button id="reset-today-button">Reset Today's Log</button>
@@ -73,26 +72,31 @@
         <div id="protein-remaining" class="calorie-display">Remaining Protein: 0g</div>
       </div>
 
-      <!-- Food and Exercise Entries -->
       <div id="entries-container" class="entries-container">
         <h3>Today's Consumption</h3>
-        <div id="entries-list" class="entries-list">
-          <!-- Food and Exercise Entries Will Be Added Here Dynamically -->
-        </div>
+        <div id="entries-list" class="entries-list"></div>
       </div>
     </div>
 
-    <!-- Right Panel: Log History -->
+    <!-- Right Panel: Calendar-based Log -->
     <div class="right-panel">
-      <h2>Log History</h2>
-      <div id="log-scroll" class="log-scroll">
-        <!-- Logs will dynamically appear here -->
+      <h2>Monthly Logs</h2>
+      <div class="calendar-container">
+        <div class="calendar-nav">
+          <button id="prev-month-btn">&lt;</button>
+          <div id="calendar-month-label"></div>
+          <button id="next-month-btn">&gt;</button>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>© 2024 Calorie & Protein Tracker. All rights reserved.</p>
+    <p>© 2025 Calorie & Protein Tracker. All rights reserved.</p>
   </footer>
+
+  <!-- Our main script -->
+  <script src="script.js"></script>
 </body>
 </html>
