@@ -8,7 +8,7 @@
   <!-- Firebase (Compat) from CDN (no npm needed) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
   <!-- Our CSS -->
   <link rel="stylesheet" href="styles.css">
@@ -18,10 +18,24 @@
     <h1>Calorie & Protein Tracker</h1>
   </header>
 
-  <div class="container">
+  <!-- Auth Section -->
+  <div class="auth-container" id="auth-container">
+    <h2>Sign In / Register</h2>
+    <input type="email" id="auth-email" placeholder="Email"><br>
+    <input type="password" id="auth-password" placeholder="Password"><br>
+    <button id="auth-login-btn">Sign In</button>
+    <button id="auth-register-btn">Register</button>
+    <button id="auth-logout-btn" style="display:none;">Log Out</button>
+    <p id="auth-status"></p>
+  </div>
 
+  <div class="container">
     <!-- Left Panel: Forms -->
     <div class="left-panel">
+       <!-- Choose a date to log -->
+       <input type="date" id="log-date" />
+       <button id="save-log-button">Save Log</button>
+       <button id="reset-today-button">Reset Today's Log</button>
       <h2>Set Your Goals</h2>
       <form id="goal-form">
         <input type="number" id="maintenance-calories" placeholder="Maintenance Calories">
@@ -50,11 +64,6 @@
         <input type="number" id="weight" placeholder="Weight" step="any">
         <button type="submit">Add Weight</button>
       </form>
-
-      <!-- Choose a date to log -->
-      <input type="date" id="log-date" />
-      <button id="save-log-button">Save Log</button>
-      <button id="reset-today-button">Reset Today's Log</button>
     </div>
 
     <!-- Center Panel: Summary -->
@@ -81,14 +90,24 @@
     <!-- Right Panel: Calendar-based Log -->
     <div class="right-panel">
       <h2>Monthly Logs</h2>
-      <div class="calendar-container">
-        <div class="calendar-nav">
-          <button id="prev-month-btn">&lt;</button>
-          <div id="calendar-month-label"></div>
-          <button id="next-month-btn">&gt;</button>
-        </div>
-        <div id="calendar-grid" class="calendar-grid"></div>
+      <!-- Nav row: left arrow, label, right arrow -->
+      <div class="calendar-nav">
+        <button id="prev-month-btn">&lt;</button>
+        <div id="calendar-month-label" style="font-weight:bold;"></div>
+        <button id="next-month-btn">&gt;</button>
       </div>
+
+      <!-- Day-of-week labels -->
+      <div class="calendar-day-labels">
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+      </div>
+      <div id="calendar-grid" class="calendar-grid"></div>
     </div>
   </div>
 

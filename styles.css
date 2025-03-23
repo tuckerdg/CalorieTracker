@@ -1,169 +1,190 @@
 /* General Styles */
 body, html {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    font-size: 18px;
-  }
-  
-  header {
-    background-color: #3b5998;
-    color: white;
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-    font-size: 24px;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  
-  /* Container for Panels */
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+}
+
+header {
+  background-color: #3b5998;
+  color: white;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Auth Container */
+.auth-container {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  text-align: center;
+}
+
+.auth-container input {
+  margin: 5px 0;
+  padding: 5px;
+}
+
+/* Make email/password about 3 times smaller than 70% = ~23-25% */
+input[type="email"], input[type="password"] {
+  width: 25%;
+}
+
+/* Container for Panels */
+/* The right panel is 1.5x as wide, for 7 columns in the calendar */
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr; 
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.left-panel, .center-panel, .right-panel {
+  min-width: 300px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+}
+
+/* Widen the right panel so 7 calendar columns fit without horizontal scroll */
+.right-panel {
+  background-color: #e3f2fd;
+  overflow-y: auto;
+  min-width: 900px; /* adjust as needed */
+}
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  background-color: #3b5998;
+  color: white;
+  border: none;
+  margin: 10px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #314e87;
+}
+
+input[type="text"], input[type="number"] {
+  width: 70%;
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 1em;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Summaries & Entries */
+.entries-container {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.entries-container h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.entries-list {
+  max-height: 600px; /* Limit height for overflow */
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.entry-item {
+  margin-bottom: 15px;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.entry-item button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #ff6347;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.entry-item button:hover {
+  background-color: #e55347;
+}
+
+/* Calendar */
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-day-labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-cell {
+  border: 1px solid #ccc;
+  min-height: 150px; 
+  position: relative;
+  padding: 5px;
+  background-color: #fafafa;
+}
+
+.calendar-date {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
   .container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
+    grid-template-columns: 1fr; /* Stack panels vertically on smaller screens */
   }
-  
-  .left-panel, .center-panel, .right-panel {
-    min-width: 300px;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-  }
-  
   .right-panel {
-    background-color: #e3f2fd;
-    overflow-y: auto; /* Keep scrolling for the panel if necessary */
+    max-height: 300px; /* Adjust height for smaller screens */
   }
-  
-  /* Buttons */
-  button {
-    padding: 10px 20px;
-    background-color: #3b5998;
-    color: white;
-    border: none;
-    margin: 10px 0;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #314e87;
-  }
-  
-  input[type="text"], input[type="number"] {
-    width: 70%;
-    margin: 10px 0;
-    padding: 10px;
-    font-size: 1em;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  /* Summaries & Entries */
-  .entries-container {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .entries-container h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
+}
+
+@media (min-width: 1024px) {
   .entries-list {
-    max-height: 600px; /* Limit height for overflow */
-    overflow-y: auto;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #ffffff;
+    max-height: 900px; 
   }
-  
-  .entry-item {
-    margin-bottom: 15px;
-    background-color: #e3f2fd;
-    border: 1px solid #90caf9;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: left;
-    font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .entry-item button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #ff6347;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .entry-item button:hover {
-    background-color: #e55347;
-  }
-  
-  /* Calendar */
-  .calendar-container {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .calendar-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  #calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7 days: Sunday-Saturday */
-    gap: 5px;
-  }
-  
-  .calendar-cell {
-    border: 1px solid #ccc;
-    min-height: 100px;
-    position: relative;
-    padding: 5px;
-    background-color: #fafafa;
-  }
-  
-  .calendar-date {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #333;
-  }
-  
-  /* Responsiveness */
-  @media (max-width: 768px) {
-    .container {
-      grid-template-columns: 1fr; /* Stack panels vertically on smaller screens */
-    }
-    .right-panel {
-      max-height: 300px; /* Adjust height for smaller screens */
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .entries-list {
-      max-height: 900px; 
-    }
-  }
-  
+}
